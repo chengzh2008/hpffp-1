@@ -36,3 +36,16 @@ postorder (Node x y z) = preorder x ++ preorder z ++ [y]
 instance Foldable BinaryTree where
   foldr _ acc Leaf = acc
   foldr f acc (Node x y z) = f y (foldr f (foldr f acc z) x)
+
+unfoldTree :: (a -> Maybe (a, b, a)) -> a -> BinaryTree b
+unfoldTree f x =
+  case f x of
+    Nothing -> Leaf
+    Just (x', y, z) -> Node (unfoldTree f x') y (unfoldTree f z)
+
+buildTree :: Integer -> BinaryTree Integer
+buildTree n = unfoldTree f 0
+  where
+    f x
+      | x > n = Nothing
+      | otherwise = Just (x + 1, x, x + 1)
